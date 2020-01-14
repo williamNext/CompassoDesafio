@@ -143,7 +143,8 @@ public class Menu {
 			while (line != null) {
 				campos = line.split(";");
 				if (campos[0].equals(codPessoa)) {
-					errorMessage("Código de pessoa já existe, Falha no cadastro!!!");	
+					errorMessage("Código de pessoa já existe, Falha no cadastro!!!");
+					bw.close();
 					return false;
 				}
 				line = bw.readLine();

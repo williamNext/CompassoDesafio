@@ -22,15 +22,13 @@ public class Pessoa {
 		return nome;
 	}
 
-
 	public String getEndereco() {
 		return endereco;
 	}
-
+	
 	public int getIdade() {
 		return idade;
 	}
-
 
 	@Override
 	public String toString() {
