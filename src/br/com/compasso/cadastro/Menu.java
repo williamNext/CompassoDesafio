@@ -46,7 +46,7 @@ public class Menu {
 				System.out.println("fim do programa");
 				System.exit(0);
 			default:
-				System.out.println("opção inválida!");
+				errorMessage("opção inválida!");
 				break;
 
 			}
@@ -86,10 +86,10 @@ public class Menu {
 				registraPessoa(p);
 			}
 			else if(name.isEmpty()){
-				errorMessage("Campo nome é obrigatório, falha no registro!!!");
+				errorMessage("Campo nome é obrigatório!!");
 			}
 			else if(address.isEmpty()){
-				errorMessage("Campo endereço é obrigatório, falha no registro!!!");
+				errorMessage("Campo endereço é obrigatório!!!");
 			}
 
 		} catch (Exception e) {
@@ -102,14 +102,15 @@ public class Menu {
 
 		try (BufferedReader bw = new BufferedReader(new FileReader("database.txt"))) {
 
-			int pes = 1;
-			String line;
-
+			String [] dados;
+			String line,formatado;
+			
 			line = bw.readLine();
 			while (line != null) {
-				System.out.println("-----------------------------\n Pessoa " + pes);
-				System.out.println("\n" + (String.join("\n", line.split(";"))));
-				pes++;
+				dados = line.split(";");
+//				
+				formatado = String.format("Cód:%s \nNome: %s \nEndereço:%s \nIdade: %s",dados[0],dados[1],dados[2],dados[3]);
+				System.out.println("\n++++++++++++++++++\n"+formatado+"");
 				line = bw.readLine();
 			}
 			bw.close();
@@ -143,7 +144,7 @@ public class Menu {
 			while (line != null) {
 				campos = line.split(";");
 				if (campos[0].equals(codPessoa)) {
-					errorMessage("Código de pessoa já existe, Falha no cadastro!!!");
+					errorMessage("Código de pessoa já existe!!!");
 					bw.close();
 					return false;
 				}
@@ -161,7 +162,7 @@ public class Menu {
 	
 	public void errorMessage(String message) {
 		System.out.println("\n--------------------------------------------------");
-		System.out.println(message);
+		System.out.println("Erro : "+message);
 		System.out.println("--------------------------------------------------");
 	}
 
