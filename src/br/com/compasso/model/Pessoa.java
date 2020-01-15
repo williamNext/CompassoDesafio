@@ -1,4 +1,4 @@
-package br.com.compasso.cadastro;
+package br.com.compasso.model;
 
 public class Pessoa {
 	private int codigo;
