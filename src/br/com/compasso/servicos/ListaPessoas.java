@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 
 public class ListaPessoas implements LerArquivo {
+	private ErrorMessages erro = new ErrorMessages();
 	@Override
 	public void leArquivo(String file) {
 		
@@ -18,10 +19,12 @@ public class ListaPessoas implements LerArquivo {
 						line = bw.readLine();
 					}
 					bw.close();
+				}else {
+					this.erro.errorMessage("não ha pessoas na lista");
 				}
 				
 			} catch (Exception e) {
-				
+				this.erro.errorMessage("problemas na leitura da lista");
 			}
 		
 		

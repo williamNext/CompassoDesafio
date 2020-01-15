@@ -1,15 +1,12 @@
 package br.com.compasso.application;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
 import br.com.compasso.model.Pessoa;
 import br.com.compasso.servicos.CadastraPessoa;
+import br.com.compasso.servicos.ChecadorValidadeCodigo;
+import br.com.compasso.servicos.ErrorMessages;
 import br.com.compasso.servicos.ListaPessoas;
 
 public class Menu {
@@ -20,6 +17,8 @@ public class Menu {
 	private CadastraPessoa cadastraPes;
 	private ListaPessoas listpes;
 	private String filename;
+	private ChecadorValidadeCodigo checador;
+	private ErrorMessages erro;
 
 	public Menu() {
 		this.scan = new Scanner(System.in);
@@ -27,6 +26,8 @@ public class Menu {
 		this.cadastraPes = new CadastraPessoa();
 		this.listpes = new ListaPessoas();
 		this.filename = "database.txt";
+		this.checador = new ChecadorValidadeCodigo();
+		this.erro = new ErrorMessages();
 	}
 
 	public void menuDeOpcoes() throws IOException {
@@ -36,12 +37,10 @@ public class Menu {
 		while (flag) {
 
 			try {
-				// Parse de String para int para evita os problemas gerados com o uso de nextInt
-				// e nextLine juntos;
 				this.key = Integer.parseInt(this.scan.nextLine());
 
 			} catch (Exception e) {
-				this.key = -1;//pra garantir que n vai ter problema no switch pq o default do int =0
+				this.key = -1;
 			}
 
 			switch (key) {
@@ -55,7 +54,7 @@ public class Menu {
 				System.out.println("fim do programa");
 				System.exit(0);
 			default:
-				errorMessage("opção inválida!");
+				this.erro.errorMessage("opção inválida!");
 				break;
 
 			}
@@ -71,7 +70,6 @@ public class Menu {
 		System.out.print("Digite aqui sua opção: ");
 	}
 
-	
 	public void coletaFormulario() {
 		int cod, age;
 		String name, address;
@@ -89,78 +87,19 @@ public class Menu {
 			System.out.print("\nDigite idade: ");
 			age = Integer.parseInt(this.scan.nextLine());
 
-			// registra apenas com códigos únicos, checa endereço e nome vazios
-			if (checaValidadeCodigo(String.valueOf(cod)) && !name.isEmpty() && !address.isEmpty() ) {
+			if (this.checador.checaCodigo(filename, String.valueOf(cod)) && !name.isEmpty() && !address.isEmpty()) {
 				Pessoa p = new Pessoa(cod, name, address, age);
-				this.cadastraPes.registra(p,this.filename);
-			}
-			else if(name.isEmpty()){
-				errorMessage("Campo nome é obrigatório!!");
-			}
-			else if(address.isEmpty()){
-				errorMessage("Campo endereço é obrigatório!!!");
+				this.cadastraPes.registra(p, this.filename);
+			} else if (name.isEmpty()) {
+				this.erro.errorMessage("Campo nome é obrigatório!!");
+			} else if (address.isEmpty()) {
+				this.erro.errorMessage("Campo endereço é obrigatório!!!");
 			}
 
 		} catch (Exception e) {
-			errorMessage("Campo Código e Idade devem ser números Inteiros!!!");
+			this.erro.errorMessage("Campo Código e Idade devem ser números Inteiros!!!");
 		}
 
-	}
-
-//	private void printaPessoasCadastradas() {
-//
-//		try (BufferedReader bw = new BufferedReader(new FileReader("database.txt"))) {
-//
-//			String [] dados;
-//			String line,formatado;
-//			
-//			line = bw.readLine();
-//			while (line != null) {
-//				dados = line.split(";");
-////				
-//				formatado = String.format("Cód:%s \nNome: %s \nEndereço:%s \nIdade: %s",dados[0],dados[1],dados[2],dados[3]);
-//				System.out.println("\n++++++++++++++++++\n"+formatado+"");
-//				line = bw.readLine();
-//			}
-//			bw.close();
-//		} catch (Exception e) {
-//			errorMessage(e.getMessage());
-//		}
-//	}
-
-
-	// para cadastro com códigos únicos
-	private boolean checaValidadeCodigo(String codPessoa) {
-
-		try (BufferedReader bw = new BufferedReader(new FileReader("database.txt"))) {
-
-			String line;
-			String[] campos;
-
-			line = bw.readLine();
-			while (line != null) {
-				campos = line.split(";");
-				if (campos[0].equals(codPessoa)) {
-					errorMessage("Código de pessoa já existe!!!");
-					bw.close();
-					return false;
-				}
-				line = bw.readLine();
-			}
-			bw.close();
-
-		} catch (Exception e) {
-			System.out.println("Erro: " + e.getMessage());
-		}
-
-		return true;
-	}
-	
-	
-	public void errorMessage(String message) {
-		System.out.println("\n--------------------------------------------------");
-		System.out.println("Erro : "+message);
-		System.out.println("--------------------------------------------------");
 	}
 
 }
